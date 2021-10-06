@@ -1,4 +1,5 @@
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PlatformService.Application.Interfaces;
@@ -14,7 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options => { options.UseInMemoryDatabase("InMen");options.LogTo(Console.WriteLine, LogLevel.Information); });
 builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
 builder.Services.AddControllers()
-    .AddFluentValidation(x=>Assembly.GetExecutingAssembly());
+    .AddFluentValidation(x => { 
+        x.RegisterValidatorsFromAssemblyContaining<Program>();
+    });
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddSwaggerGen(c =>
@@ -36,6 +39,22 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseExceptionHandler(e => e.Run(async context =>
+{
+    var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
+    if (exception != null) 
+    {
+        var response = new {
+            title = exception.Message,
+            errors = new { exception.Message, exception.StackTrace, exception.InnerException, exception.HResult},
+            path = context.Request.Path.Value,
+            source = exception.Source,
+            timeStamp = DateTime.Now
+        };
+        await context.Response.WriteAsJsonAsync(response);
+    }
+}));
 
 PrepDb.PrepPopulation(app);
 

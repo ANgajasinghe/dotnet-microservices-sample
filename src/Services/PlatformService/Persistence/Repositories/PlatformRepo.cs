@@ -25,7 +25,7 @@ namespace PlatformService.Persistence.Repositories
             => _appDbContext.Platforms.ToList();
 
         public Platform GetPlatformById(int id)
-            => _appDbContext.Platforms.FirstOrDefault(x => id.Equals(id)) ?? throw new ArgumentNullException(nameof(id),"Invalid Id");
+            => _appDbContext.Platforms.FirstOrDefault(x => x.Id.Equals(id)) ?? throw new ArgumentNullException(nameof(id),"Invalid Id");
 
         public bool SaveChanges()
             => (_appDbContext.SaveChanges() >= 0);

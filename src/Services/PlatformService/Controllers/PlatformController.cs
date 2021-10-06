@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PlatformService.Application.ApiModels;
 using PlatformService.Application.Interfaces;
+using PlatformService.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,23 @@ namespace PlatformService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<PlatformReadQuery>> Get()
+        [HttpGet(Name = "GetAll")]
+        public ActionResult<IEnumerable<PlatformReadQuery>> GetAll()
             => Ok(_mapper.Map<List<PlatformReadQuery>>(_platformRepo.GetAllPlatforms()));
 
+        [HttpGet("{id}",Name = "GetById")]
+        public ActionResult<PlatformReadQuery> GetById(int id)
+         => Ok(_mapper.Map<PlatformReadQuery>(_platformRepo.GetPlatformById(id)));
+
+        [HttpPost]
+        public ActionResult<PlatformReadQuery> Post(PlatformCtrateCommand command)
+        {
+            var data = _mapper.Map<Platform>(command);
+            _platformRepo.CreatePlatform(data);
+            _platformRepo.SaveChanges();
+            return CreatedAtRoute(nameof(GetById),new { Id = data.Id },_mapper.Map<PlatformReadQuery>(data));
+        }
+      
 
     }
 }
