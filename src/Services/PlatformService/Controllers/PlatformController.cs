@@ -33,7 +33,7 @@ namespace PlatformService.Controllers
          => Ok(_mapper.Map<PlatformReadQuery>(_platformRepo.GetPlatformById(id)));
 
         [HttpPost]
-        public ActionResult<PlatformReadQuery> Post(PlatformCtrateCommand command)
+        public ActionResult<PlatformReadQuery> Post(PlatformCreateCommand command)
         {
             var data = _mapper.Map<Platform>(command);
             _platformRepo.CreatePlatform(data);

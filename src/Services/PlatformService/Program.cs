@@ -1,16 +1,13 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using PlatformService.Application.Interfaces;
 using PlatformService.Persistence;
-using PlatformService.Persistence.Repositories;
-using System.Reflection;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 
 builder.Services.AddDbContext<AppDbContext>(options => { options.UseInMemoryDatabase("InMen");options.LogTo(Console.WriteLine, LogLevel.Information); });
 builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
@@ -24,6 +21,8 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "PlatformService", Version = "v1" });
 });
+
+
 
 var app = builder.Build();
 

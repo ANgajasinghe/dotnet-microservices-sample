@@ -24,9 +24,9 @@ namespace PlatformService.Persistence
             {
                 Console.WriteLine("---> Seeding data ....");
                 appDbContext.Platforms.AddRange(
-                    new Platform() { Name = "Dot net", Publisher = "Microsoft", Code = "Free" },
-                    new Platform() { Name = "SQL Server Express", Publisher = "Microsoft", Code = "Free" },
-                    new Platform() { Name = "Kubernetes", Publisher = "Cloud Native Computing Foundation", Code = "Free" }
+                    new Platform() { Name = "Dot net", Publisher = "Microsoft", Cost = "Free" },
+                    new Platform() { Name = "SQL Server Express", Publisher = "Microsoft", Cost = "Free" },
+                    new Platform() { Name = "Kubernetes", Publisher = "Cloud Native Computing Foundation", Cost = "Free" }
                     );
                 appDbContext.SaveChanges();
             }

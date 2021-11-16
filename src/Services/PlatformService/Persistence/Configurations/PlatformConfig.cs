@@ -23,7 +23,7 @@ public class PlatformConfig : IEntityTypeConfiguration<Platform>
             .HasMaxLength(128)
         .IsRequired();
 
-        builder.Property(t => t.Code)
+        builder.Property(t => t.Cost)
             .HasMaxLength(128)
             .IsRequired();
 
