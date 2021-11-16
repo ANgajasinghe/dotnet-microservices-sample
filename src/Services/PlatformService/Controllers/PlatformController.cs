@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PlatformService.Application.ApiModels;
 using PlatformService.Application.Interfaces;
 using PlatformService.Entities;
 using System;
@@ -8,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlatformService.Application.Dtos;
 
 namespace PlatformService.Controllers
 {

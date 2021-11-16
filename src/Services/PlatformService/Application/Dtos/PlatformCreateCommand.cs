@@ -2,7 +2,7 @@
 using PlatformService.Application.Mappings;
 using PlatformService.Entities;
 
-namespace PlatformService.Application.ApiModels
+namespace PlatformService.Application.Dtos
 {
     public class PlatformCreateCommand : IMapTo<Platform>
     {
