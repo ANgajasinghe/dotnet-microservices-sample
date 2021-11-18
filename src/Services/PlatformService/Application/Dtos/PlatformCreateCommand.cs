@@ -4,7 +4,7 @@ using PlatformService.Entities;
 
 namespace PlatformService.Application.Dtos
 {
-    public class PlatformCreateCommand : IMapTo<Platform>
+    public class PlatformCreateCommand : IMapTo<Platform>, IMapTo<PlatformReadQuery>
     {
         public string? Name { get; set; }
         public string? Publisher { get; set; }

@@ -17,40 +17,46 @@ namespace PlatformService.Application.Mappings
 
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
+            
+            ReflectMethods(assembly,typeof(IMapFrom<>),"IMapFrom`1");
+            ReflectMethods(assembly,typeof(IMapTo<>),"IMapTo`1");
+         
+        }
+
+        private void ReflectMethods(Assembly assembly,Type interfaceType, string interfaceName)
+        {
             var types = assembly.GetExportedTypes()
                 .Where(t => t.GetInterfaces().Any(i =>
-                    i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
+                    i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType))
                 .ToList();
-
-            var toTypes = assembly.GetExportedTypes()
-                .Where(t => t.GetInterfaces().Any(i =>
-                    i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapTo<>)))
-                .ToList();
-
-
-            //  from
+            
             foreach (var type in types)
             {
                 var instance = Activator.CreateInstance(type);
 
                 // check IMapTo or From First
+                var clzMethod = type.GetMethod("Mapping");
 
-                var methodInfo = type.GetMethod("Mapping")
-                                 ?? type.GetInterface("IMapFrom`1")?.GetMethod("Mapping");
+                if (clzMethod is null)
+                {
 
-                methodInfo?.Invoke(instance, new object[] { this });
-            }
+                    var interfaces = type.GetInterfaces()?
+                        .Where(x=>x.Name.Equals(interfaceName));
 
-            foreach (var type in toTypes)
-            {
-                var instance = Activator.CreateInstance(type);
+                    if (interfaces is null) continue;
+                    
+                    foreach (var iT in interfaces)
+                    {
+                        var methodInfo = iT?.GetMethod("Mapping");
+                        methodInfo?.Invoke(instance, new object[] { this });
+                    }
+                    
+                }
+                else
+                {
+                    clzMethod.Invoke(instance, new object[] { this });
+                }
 
-                // check IMapTo or From First
-
-                var methodInfo = type.GetMethod("Mapping")
-                                 ?? type.GetInterface("IMapTo`1")?.GetMethod("Mapping");
-
-                methodInfo?.Invoke(instance, new object[] { this });
             }
         }
     }

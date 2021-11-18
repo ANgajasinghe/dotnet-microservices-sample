@@ -16,6 +16,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 
+
 app.MapPost("c/platforms", () =>
 {
     Console.WriteLine("======= Service is up and running");
@@ -26,9 +27,5 @@ app.MapPost("c/platforms", () =>
 
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();

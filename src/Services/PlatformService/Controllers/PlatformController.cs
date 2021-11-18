@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlatformService.Application.Dtos;
+using PlatformService.Application.SyncDataServices.Http;
 
 namespace PlatformService.Controllers
 {
@@ -17,11 +18,13 @@ namespace PlatformService.Controllers
     {
         private readonly IPlatformRepo _platformRepo;
         private readonly IMapper _mapper;
+        private readonly ICommandDataClient _commandDataClient;
 
-        public PlatformController(IPlatformRepo platformRepo, IMapper mapper)
+        public PlatformController(IPlatformRepo platformRepo, IMapper mapper, ICommandDataClient commandDataClient)
         {
             _platformRepo = platformRepo;
             _mapper = mapper;
+            _commandDataClient = commandDataClient;
         }
 
         [HttpGet(Name = "GetAll")]
@@ -33,14 +36,29 @@ namespace PlatformService.Controllers
          => Ok(_mapper.Map<PlatformReadQuery>(_platformRepo.GetPlatformById(id)));
 
         [HttpPost]
-        public ActionResult<PlatformReadQuery> Post(PlatformCreateCommand command)
+        public async Task<ActionResult<PlatformReadQuery>> Post(PlatformCreateCommand command)
         {
             var data = _mapper.Map<Platform>(command);
             _platformRepo.CreatePlatform(data);
             _platformRepo.SaveChanges();
+
+            var platformReadQuery = _mapper.Map<PlatformReadQuery>(command);
+            try
+            {
+                await _commandDataClient.SendPlatformToCommand(platformReadQuery);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not send sync message to command client {e.Message}");
+                throw;
+            }
+            
+            
+            
             return CreatedAtRoute(nameof(GetById),new { Id = data.Id },_mapper.Map<PlatformReadQuery>(data));
         }
       
+        
 
     }
 }

@@ -1,6 +1,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using PlatformService.Application.SyncDataServices.Http;
 using PlatformService.Persistence;
 
 
@@ -22,7 +23,9 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new() { Title = "PlatformService", Version = "v1" });
 });
 
+builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
 
+Console.WriteLine($"---> Command Service Endpoint {builder.Configuration["CommandService"]}");
 
 var app = builder.Build();
 
