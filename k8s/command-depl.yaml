@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: platform-depl
+  name: command-depl
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: platformservice
+      app: commandservice
   template:
     metadata:
       labels:
-        app: platformservice
+        app: commandservice
     spec:
       containers:
-        - name: platformservice
-          image: angajasinghe/platformservice:latest
+        - name: commandservice
+          image: angajasinghe/commandservice:latest
           resources:
             limits:
               cpu: 100m
@@ -29,32 +29,16 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: platform-service
-  namespace: default
-spec:
-  type: NodePort
-  selector:
-    app: platformservice
-  ports:
-    - port: 80
-      targetPort: 80
-      protocol: TCP
-
-
---- 
 
 apiVersion: v1
 kind : Service
 metadata:
-  name: platform-clusterip-service
+  name: command-clusterip-service
   namespace: default
 spec:
   type: ClusterIP
   selector:
-    app: platformservice
+    app: commandservice
   ports:
     - port: 80
       targetPort: 80
