@@ -10,7 +10,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<AppDbContext>(options => { options.UseInMemoryDatabase("InMen");options.LogTo(Console.WriteLine, LogLevel.Information); });
+
+if (builder.Environment.IsProduction())
+{
+    Console.WriteLine("--> Using Sql Server Db");
+    builder.Services.AddDbContext<AppDbContext>(opt => 
+        opt.UseSqlServer(builder.Configuration.GetConnectionString("PlatFormCon")));
+}
+else
+{
+    Console.WriteLine("--> Using In memory");
+    builder.Services
+        .AddDbContext<AppDbContext>(options => { options.UseInMemoryDatabase("InMen");options.LogTo(Console.WriteLine, LogLevel.Information); });
+
+}
+
 builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
 builder.Services.AddControllers()
     .AddFluentValidation(x => { 
@@ -60,7 +74,7 @@ app.UseExceptionHandler(e => e.Run(async context =>
     }
 }));
 
-PrepDb.PrepPopulation(app);
+PrepDb.PrepPopulation(app,app.Environment.IsProduction());
 
 app.Run();
 

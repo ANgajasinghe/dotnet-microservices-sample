@@ -13,9 +13,9 @@ public class AppDbContext : DbContext
 {
 
     public AppDbContext(DbContextOptions options) : base(options) { }
-    
 
-    public DbSet<Platform> Platforms{  get; set;}
+
+    public DbSet<Platform> Platforms { get; set; } = null!;
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,4 +26,3 @@ public class AppDbContext : DbContext
     }
 
 }
-

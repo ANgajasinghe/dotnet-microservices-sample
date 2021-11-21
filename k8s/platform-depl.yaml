@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: platformservice
-          image: angajasinghe/platformservice:latest
+          image: angajasinghe/platformservice:v1
           resources:
             limits:
               cpu: 100m
