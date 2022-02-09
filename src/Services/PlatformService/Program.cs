@@ -1,6 +1,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using PlatformService.Application.AsyncDataServices;
 using PlatformService.Application.SyncDataServices.Http;
 using PlatformService.Persistence;
 
@@ -38,6 +39,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
+builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 
 Console.WriteLine($"---> Command Service Endpoint {builder.Configuration["CommandService"]}");
 

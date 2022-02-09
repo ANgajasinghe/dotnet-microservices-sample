@@ -27,7 +27,7 @@ public class HttpCommandDataClient : ICommandDataClient
             Encoding.UTF8, 
             "application/json");
 
-        var response = await _httpClient.PostAsync($"{_configuration["CommandService"]}/c/platforms",httpContent);
+        var response = await _httpClient.PostAsync($"{_configuration["CommandService"]}/c/platforms",null);
         
         if(response.IsSuccessStatusCode)
             Console.WriteLine("---> sync POST to command service is ok");

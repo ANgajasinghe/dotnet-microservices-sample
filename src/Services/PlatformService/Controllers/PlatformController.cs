@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlatformService.Application.AsyncDataServices;
 using PlatformService.Application.Dtos;
 using PlatformService.Application.SyncDataServices.Http;
 
@@ -19,12 +20,17 @@ namespace PlatformService.Controllers
         private readonly IPlatformRepo _platformRepo;
         private readonly IMapper _mapper;
         private readonly ICommandDataClient _commandDataClient;
+        private readonly IMessageBusClient _messageBusClient;
 
-        public PlatformController(IPlatformRepo platformRepo, IMapper mapper, ICommandDataClient commandDataClient)
+        public PlatformController(IPlatformRepo platformRepo, IMapper mapper, 
+            ICommandDataClient commandDataClient,
+            IMessageBusClient messageBusClient
+            )
         {
             _platformRepo = platformRepo;
             _mapper = mapper;
             _commandDataClient = commandDataClient;
+            _messageBusClient = messageBusClient;
         }
 
         [HttpGet(Name = "GetAll")]
@@ -43,6 +49,8 @@ namespace PlatformService.Controllers
             _platformRepo.SaveChanges();
 
             var platformReadQuery = _mapper.Map<PlatformReadQuery>(command);
+            
+            // send sync message
             try
             {
                 await _commandDataClient.SendPlatformToCommand(platformReadQuery);
@@ -50,6 +58,19 @@ namespace PlatformService.Controllers
             catch (Exception e)
             {
                 Console.WriteLine($"Could not send sync message to command client {e.Message}");
+                throw;
+            }
+            
+            // send async message
+            try
+            {
+                var platformPublishedDto = _mapper.Map<PlatformPublishedDto>(platformReadQuery);
+                platformPublishedDto.Event = "Platform_Published";
+                _messageBusClient.PublishNewPlatform(platformPublishedDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not send async message to command client {e.Message}");
                 throw;
             }
             

@@ -2,7 +2,7 @@
 
 namespace CommandsService.Persistence.Repositories;
 
-public class CommandRepo
+public class CommandRepo : ICommandRepo
 {
     private readonly AppDbContext _context;
 
@@ -41,11 +41,11 @@ public class CommandRepo
         return _context.Platforms.ToList();
     }
 
-    public Command GetCommand(int platformId, int commandId)
+    public Command? GetCommand(int platformId, int commandId)
     {
         return _context.Commands
             .Where(c => c.PlatformId == platformId && c.Id == commandId)
-            ?.FirstOrDefault() ?? new Command();
+            ?.FirstOrDefault() ?? null;
     }
 
     public IEnumerable<Command> GetCommandsForPlatform(int platformId)
@@ -55,7 +55,7 @@ public class CommandRepo
             .OrderBy(c => c.Platform.Name);
     }
 
-    public bool PlaformExits(int platformId)
+    public bool PlatformExits(int platformId)
     {
         return _context.Platforms.Any(p => p.Id == platformId);
     }
